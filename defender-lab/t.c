@@ -16,6 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h"
 #include "string.c"
+#include <stddef.h>
+
 struct sprite {
    int x,y;
    char *p;
@@ -259,7 +261,7 @@ int key;
      if (upeek(up)){
      key=ugetc(up);
      switch(key){
-       case 'd':
+       case 'w':
          if ( sprites[1].x < 624){
             sprites[1].x+=16;
             }
@@ -306,8 +308,9 @@ other keys w,e and f to move defender around */
 					sprites[2].x += 8;
 				}
 			}
+			size_t array_size = sizeof(sprites) / sizeof( * sprites);
 			
-			for  (int i = 3; i < NUM_LANDERS + 3; i++){
+			for  (int i = 3; i < array_size + 3; i++){
 				if(sprites[i].enabled &&
 					sprites[2].x < (sprites[i].x + 16) &&
 					sprites[2].x + 16 > sprites[i].x &&
