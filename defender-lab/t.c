@@ -289,39 +289,39 @@ other keys w,e and f to move defender around */
         case 'f':
 	  /* TODO firing */
 			if(sprites[1].direction == 1){
-				sprites[2].x = sprites[1].x + 16;
-				sprites[2].direction = 1;
+				sprites[0].x = sprites[1].x + 16;
+				sprites[0].direction = 1;
 			}
 			else{
-				sprites[2].x = sprites[1].x - 16;
-				sprites[2].direction = 0;
+				sprites[0].x = sprites[1].x - 16;
+				sprites[0].direction = 0;
 			}
-			sprites[2].y = sprites[1].y;
-			sprites[2].p = &_binary_shoot_bmp_start;
-			sprites[2].enabled =1;
+			sprites[0].y = sprites[1].y;
+			sprites[0].p = &_binary_shoot_bmp_start;
+			sprites[0].enabled =1;
 			
-			if(sprites[2].enabled){
-				if(sprites[2].direction == 0){
-					sprites[2].x -= 8;
+			if(sprites[0].enabled){
+				if(sprites[0].direction == 0){
+					sprites[0].x -= 8;
 				} 
 				else{
-					sprites[2].x += 8;
+					sprites[0].x += 8;
 				}
 			}
-			size_t array_size = sizeof(sprites) / sizeof( * sprites);
+			// size_t array_size = sizeof(sprites) / sizeof( * sprites);
 			
-			for  (int i = 3; i < array_size + 3; i++){
-				if(sprites[i].enabled &&
-					sprites[2].x < (sprites[i].x + 16) &&
-					sprites[2].x + 16 > sprites[i].x &&
-					sprites[2].y > (sprites[i].y + 16) &&
-					sprites[2].y + 16 > sprites[i].y){
+			// for  (int i = 3; i < array_size + 3; i++){
+			// 	if(sprites[i].enabled &&
+			// 		sprites[2].x < (sprites[i].x + 16) &&
+			// 		sprites[2].x + 16 > sprites[i].x &&
+			// 		sprites[2].y > (sprites[i].y + 16) &&
+			// 		sprites[2].y + 16 > sprites[i].y){
 				
-						sprites[i].enabled = 0;
-						sprites[2].enabled = 0;
-						break;
-					}
-			}
+			// 			sprites[i].enabled = 0;
+			// 			sprites[2].enabled = 0;
+			// 			break;
+			// 		}
+			// }
 			
 			
 				
