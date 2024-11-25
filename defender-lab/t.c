@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "defines.h"
 #include "string.c"
 #include <stddef.h>
+//#include <stdio.h>
 
 struct sprite {
    int x,y;
@@ -159,12 +160,50 @@ for (i=0; i<8; i++){
     }
 
 
-         
-for ( i=1;i<4;i++){
-    show_bmp(sprites[i].p, sprites[i].y, sprites[i].x);
-    if (i>1)
-         sprites[i].x+=10; 
-    }
+   
+    if(sprites[0].enabled){  
+        if(sprites[0].direction == 0){
+	      sprites[0].x -= 16;	} 
+         else{
+	     sprites[0].x += 16;	}
+	 if(sprites[0].x < 0 || sprites[0].x > 640){
+              sprites[0].enabled = 0;
+              }
+        for(i = 2; i <4; i++){           	     
+             if (sprites[0].x <= (sprites[i].x + 32) &&
+              (sprites[0].x + 10) >= sprites[i].x &&
+              sprites[0].y <= (sprites[i].y + 27) &&
+              (sprites[0].y + 50) >= sprites[i].y) {
+              // Collision detected
+
+	      uuprints("22\n");
+	      sprites[i].enabled = 0;
+	      sprites[0].enabled = 0;
+	  break;
+            }
+          }
+          }
+    
+      
+      if(sprites[0].enabled){
+        show_bmp(sprites[0].p, sprites[0].y, sprites[0].x);
+      }
+       
+      for(i = 1; i < 4; i++){
+        if(sprites[i].enabled){
+          show_bmp(sprites[i].p , sprites[i].y,sprites[i].x);      
+        }
+        if (i>1){
+           sprites[i].x+=10; 
+          }
+        }
+        
+    
+
+      
+  
+  
+  
 
 fbmodified =1;
 *(volatile unsigned int *)(0x1012001C) |= 0xc; // enable video interrupts
@@ -185,13 +224,16 @@ int main()
    sprites[1].x = 80;
    sprites[1].y = 0;
    sprites[1].p = &_binary_ship_right_bmp_start;
-   sprites[1].direction=1;
+   sprites[1].direction = 1;
+   sprites[1].enabled = 1;
    sprites[2].x = 200;
    sprites[2].y = 200;
    sprites[2].p = &_binary_lander_bmp_start;
+   sprites[2].enabled = 1;
    sprites[3].x = 200;
    sprites[3].y = 100;
    sprites[3].p = &_binary_lander_bmp_start;
+   sprites[3].enabled = 1;
 
    char * p;   
    color = YELLOW;
@@ -258,29 +300,41 @@ int key;
 }
 
      move=0;
+			
      if (upeek(up)){
      key=ugetc(up);
      switch(key){
-       case 'w':
-         if ( sprites[1].x < 624){
-            sprites[1].x+=16;
-            }
-         move =1;
-        break;
-		 /* TODO 
-
-other keys w,e and f to move defender around */
-		case 'e': //left
-		 if(sprites[1].x > 0){
-			 sprites[1].x -= 16;
-			 sprites[1].p = &_binary_ship_left_bmp_start;
-		 }
-		 move = 1;
-		break;
-		case 'd': // Right
+     case 'd': // Right
 		 if (sprites[1].x < 624){
 			 sprites[1].x += 16;
 			 sprites[1].p = &_binary_ship_right_bmp_start;
+			 sprites[1].direction = 1;
+			
+			 
+		 }
+		 move = 1;
+        break;
+		 /* TODO 
+other keys w,e and f to move defender around */
+                case 's':   // to move down
+                 if ( sprites[1].y < 464){
+                    sprites[1].y+=16;
+                    }
+                 move =1;
+                break;	      
+		case 'w':   // to move up
+         if ( sprites[1].y> 0){
+            sprites[1].y-=16;
+            }
+         move =1;
+        break;
+        case 'e': //left
+
+		 if(sprites[1].x > 0){
+			 sprites[1].x -= 16;
+			 sprites[1].p =     &_binary_ship_left_bmp_start;			 
+			 sprites[1].direction = 0;
+			 			 		
 		 }
 		 move = 1;
 		break;
@@ -288,43 +342,33 @@ other keys w,e and f to move defender around */
 
         case 'f':
 	  /* TODO firing */
+	  if(sprites[0].enabled == 0 ){
+	  show_bmp(sprites[0].p, sprites[0].y, sprites[0].x);
+	  }
 			if(sprites[1].direction == 1){
-				sprites[0].x = sprites[1].x + 16;
-				sprites[0].direction = 1;
-			}
-			else{
+			
+				  sprites[0].x = sprites[1].x + 16;
+				  sprites[0].direction = 1;
+			 }
+			else if(sprites[1].direction == 0){
+			        
 				sprites[0].x = sprites[1].x - 16;
 				sprites[0].direction = 0;
 			}
 			sprites[0].y = sprites[1].y;
 			sprites[0].p = &_binary_shoot_bmp_start;
-			sprites[0].enabled =1;
-			
-			if(sprites[0].enabled){
-				if(sprites[0].direction == 0){
-					sprites[0].x -= 8;
-				} 
-				else{
-					sprites[0].x += 8;
-				}
-			}
-			// size_t array_size = sizeof(sprites) / sizeof( * sprites);
-			
-			// for  (int i = 3; i < array_size + 3; i++){
-			// 	if(sprites[i].enabled &&
-			// 		sprites[2].x < (sprites[i].x + 16) &&
-			// 		sprites[2].x + 16 > sprites[i].x &&
-			// 		sprites[2].y > (sprites[i].y + 16) &&
-			// 		sprites[2].y + 16 > sprites[i].y){
-				
-			// 			sprites[i].enabled = 0;
-			// 			sprites[2].enabled = 0;
-			// 			break;
-			// 		}
-			// }
-			
-			
-				
+		        sprites[0].enabled = 1;	
+    
+		        int *temp_fb = fb;
+		        
+		        fb = fb1;
+	  show_bmp(sprites[0].p, sprites[0].y, sprites[0].x);
+	  fb = fb2;
+	   show_bmp(sprites[0].p, sprites[0].y, sprites[0].x);
+	   
+	   fb = temp_fb;
+	  fbmodified = 1;
+	  		
 		break;
 		
   
