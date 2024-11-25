@@ -152,6 +152,7 @@ int fire;
 Draw_all(){
 char *p;
 int i=0,j=0;
+
 for (int x=0; x<640*480; x++)
     fb[x] = 0x00000000;    // clean screen; all pixels are BLACK
  TIMER *t = &timer[0];
@@ -166,17 +167,17 @@ for (i=0; i<8; i++){
 	      sprites[0].x -= 16;	} 
          else{
 	     sprites[0].x += 16;	}
-	 if(sprites[0].x < 0 || sprites[0].x > 640){
+	 if(sprites[0].x < 0 || sprites[0].x > 590){
               sprites[0].enabled = 0;
               }
-        for(i = 2; i <4; i++){           	     
+        for(i = 2; i <4; i++){    // collision checking
+        
              if (sprites[0].x <= (sprites[i].x + 32) &&
-              (sprites[0].x + 10) >= sprites[i].x &&
-              sprites[0].y <= (sprites[i].y + 27) &&
+              (sprites[0].x + 10) >= sprites[i].x  &&
+              sprites[0].y <= (sprites[i].y + 27 ) &&
               (sprites[0].y + 50) >= sprites[i].y) {
-              // Collision detected
+              // collision detected
 
-	      uuprints("22\n");
 	      sprites[i].enabled = 0;
 	      sprites[0].enabled = 0;
 	  break;
@@ -197,14 +198,7 @@ for (i=0; i<8; i++){
            sprites[i].x+=10; 
           }
         }
-        
-    
-
       
-  
-  
-  
-
 fbmodified =1;
 *(volatile unsigned int *)(0x1012001C) |= 0xc; // enable video interrupts
 }
@@ -305,7 +299,7 @@ int key;
      key=ugetc(up);
      switch(key){
      case 'd': // Right
-		 if (sprites[1].x < 624){
+		 if (sprites[1].x < 568){
 			 sprites[1].x += 16;
 			 sprites[1].p = &_binary_ship_right_bmp_start;
 			 sprites[1].direction = 1;
@@ -317,7 +311,7 @@ int key;
 		 /* TODO 
 other keys w,e and f to move defender around */
                 case 's':   // to move down
-                 if ( sprites[1].y < 464){
+                 if ( sprites[1].y < 445){
                     sprites[1].y+=16;
                     }
                  move =1;
@@ -359,6 +353,7 @@ other keys w,e and f to move defender around */
 			sprites[0].p = &_binary_shoot_bmp_start;
 		        sprites[0].enabled = 1;	
     
+  
 		        int *temp_fb = fb;
 		        
 		        fb = fb1;
